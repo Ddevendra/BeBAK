@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Socket-Test</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-3.0.5.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+
+            namespace = '/test';
+            var socket = io(namespace);
+
+            socket.on('my_response', function(msg, cb) {
+                $('#log').append('<br>' + $('<div/>').text('from #' + msg.from + ': ' + msg.data).html());
+                if (cb)
+                    cb();
+            });
+            $('form#connect').submit(function(event) {
+                socket.emit('make_connection', {data: $('#username').val()});
+                return false;
+            });
+            $('form#emit').submit(function(event) {
+                socket.emit('save_messages', {data: $('#emit_data').val()});
+                return false;
+            });
+            $('form#deliver').submit(function(event) {
+                socket.emit('deliver_messages', {data: $('#deliver_to').val()});
+                return false;
+            });
+            $('form#disconnect').submit(function(event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+        });
+    </script>
+</head>
+<body style="background-color:white;">
+    <br>
+    <hr>
+    <h1 style="background-color:white;">Socket</h1>
+    <form id="connect" method="POST" action='#'>
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="submit" value="Connect to Socket">
+    </form>
+    <form id="disconnect" method="POST" action="#">
+        <input type="submit" value="Disconnect Server">
+    </form>
+    <hr>
+    <h1 style="background-color:white;">Messaging</h1>
+    <form id="emit" method="POST" action='#'>
+        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+        <input type="submit" value="Set Message">
+    </form>
+    <form id="deliver" method="POST" action='#'>
+        <input type="submit" value="Deliver Message to user">
+        <input type="number" name="deliver_to" id="deliver_to" placeholder="user number">
+    </form>
+    <br>
+    <hr>
+    
+    <h1 style="background-color:white;">Logs</h1>
+    <div id="log" ></div>
+</body>
+</html>
