@@ -1,6 +1,6 @@
 *AUTHENTICATION* :
 - Unique username
-- Password (hashing o be implemented)
+- Password (hashing to be implemented)
 
 Each login session is authneticated by the server provided tokens, generated at time of each login and is valid until logout
 ---
