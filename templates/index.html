@@ -7,17 +7,17 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
 
-            namespace = '/test';
+            namespace = '/chat';
             var socket = io(namespace);
+
+            socket.on('connect', function() {
+                socket.emit('make_connection', {data: "Connecting..."});
+            });
 
             socket.on('my_response', function(msg, cb) {
                 $('#log').append('<br>' + $('<div/>').text('from #' + msg.from + ': ' + msg.data).html());
                 if (cb)
                     cb();
-            });
-            $('form#connect').submit(function(event) {
-                socket.emit('make_connection', {data: $('#username').val()});
-                return false;
             });
             $('form#emit').submit(function(event) {
                 socket.emit('save_messages', {data: $('#emit_data').val()});
@@ -36,12 +36,11 @@
 </head>
 <body style="background-color:white;">
     <br>
-    <hr>
-    <h1 style="background-color:white;">Socket</h1>
-    <form id="connect" method="POST" action='#'>
-        <input type="text" name="username" id="username" placeholder="username">
-        <input type="submit" value="Connect to Socket">
+    <form method="POST" action="/home_page">
+            <h1> Hello {{username}} </h1>
+            <button type="submit" name="logout" value="True">Logout</button>
     </form>
+    <br>
     <form id="disconnect" method="POST" action="#">
         <input type="submit" value="Disconnect Server">
     </form>
@@ -53,7 +52,7 @@
     </form>
     <form id="deliver" method="POST" action='#'>
         <input type="submit" value="Deliver Message to user">
-        <input type="number" name="deliver_to" id="deliver_to" placeholder="user number">
+        <input type="text" name="deliver_to" id="deliver_to" placeholder="username">
     </form>
     <br>
     <hr>

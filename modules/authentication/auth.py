@@ -1,13 +1,11 @@
 from flask import *
+
 import hashlib
-import sqlite3  
+import sqlite3 
 
-app = Flask(__name__)  
-
-@app.route('/',methods=['GET']) 
-def authenticate_user(): 
+def authenticate_user(request): 
     # open database
-    dbConnectTokens = sqlite3.connect('tokens')
+    dbConnectTokens = sqlite3.connect('./database/tokens')
     dbTOKENS = dbConnectTokens.execute("select * from CookieTokens")
 
     # compare the cookie token with tokens in database
@@ -23,15 +21,14 @@ def authenticate_user():
     res = make_response(render_template("login.html"))
     return res
 
-@app.route('/register_user',methods=['GET','POST'])
-def register_user():
+def register_user(request):
     # make a new entry into accounts database
     if request.method == 'POST':
         userName = request.form.get('username')
         passWord = request.form.get('password')
         print("Signing up :::: username:",userName,"    password:",passWord)
 
-        dbConnectAccounts = sqlite3.connect('accounts')
+        dbConnectAccounts = sqlite3.connect('./database/accounts')
         dbACCOUNTS = dbConnectAccounts.execute("select * from Accounts")
         
         # check if user already exists
@@ -46,12 +43,10 @@ def register_user():
         return redirect("/")
 
     res = make_response(render_template('signup.html'))
-    return res  
+    return res 
 
-@app.route('/home_page',methods=['GET', 'POST'])
-def home_page():
-
-    dbConnectTokens = sqlite3.connect('tokens')
+def home_page(request):
+    dbConnectTokens = sqlite3.connect('./database/tokens')
     dbTOKENS = dbConnectTokens.execute("select * from CookieTokens")
 
     read_cookie_token = str(request.cookies.get("token"))
@@ -73,15 +68,13 @@ def home_page():
                 return res
 
             dbConnectTokens.close()
-            res = make_response(render_template("home_page.html",username=entry[1]))
+            res = make_response(render_template('index.html',username=entry[1]))
             return res
 
     dbConnectTokens.close()        
     return "well you are unregistered user. Go home fella.. go home"
 
-@app.route('/verify_user',methods=['POST'])
-def verify_user():
-
+def verify_user(request):
     userName = request.form.get('username')
     passWord = request.form.get('password')
     print("userName:",userName,"    password:",passWord)  
@@ -91,10 +84,10 @@ def verify_user():
 
     # search in database if user exists
     # if yes -> assign token and save token to cookies and database  
-    dbConnectAccounts = sqlite3.connect('accounts')
+    dbConnectAccounts = sqlite3.connect('./database/accounts')
     dbACCOUNTS = dbConnectAccounts.execute("select * from Accounts")
 
-    dbConnectTokens = sqlite3.connect('tokens')
+    dbConnectTokens = sqlite3.connect('./database/tokens')
     dbTOKENS = dbConnectTokens.execute("select * from CookieTokens")
 
     for entry in dbACCOUNTS:
@@ -105,14 +98,11 @@ def verify_user():
             dbConnectTokens.close()
             dbConnectAccounts.close()
             print ("well you are already registered. Redirect to home page")
-            res = make_response(render_template("home_page.html",username=userName))
+            res = make_response(render_template('index.html',username=userName))
             res.set_cookie('token',token.hexdigest())
             return res
     
     print ("well you are unregistered user.")
     res = make_response(render_template("login.html"))
     dbConnectAccounts.close()
-    return res
-  
-if __name__ == '__main__':  
-    app.run(debug = True)  
+    return res 
