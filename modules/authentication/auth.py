@@ -88,6 +88,9 @@ def verify_user(request):
                 else :
                     DBtokens.insert(data=(str(token.hexdigest()),str(userName)))
 
+            if len(tokens)==0:
+                DBtokens.insert(data=(str(token.hexdigest()),str(userName)))
+
             res = make_response(render_template('index.html',username=userName))
             res.set_cookie('token',token.hexdigest())
             return res

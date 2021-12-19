@@ -4,53 +4,67 @@ from ..db_class import database
 
 DBaccounts = database("./database/accounts",table="Accounts")
 DBtokens = database(database="./database/tokens",table="CookieTokens")
-
-clients = []
-users = []
-
+DBclients = database(database="./database/clients",table="LiveClients")
 
 def connect(session,request,message):
     # create list of connected users
     print("__________________________",request.sid)
 
-    # getting username
     tokens = DBtokens.read()
+    clients = DBclients.read()
 
     read_cookie_token = str(request.cookies.get("token"))
     print("got this cookie: token=",read_cookie_token)
-    for entry in tokens:
-        if read_cookie_token == entry[0]:
+    for token_entry in tokens:
+        if read_cookie_token == token_entry[0]:
 
-            #check if user is already connected (implement database to resolve the multiple login issue)
-            if str(entry[1]) not in users:
-                users.append(entry[1])
-                clients.append(request.sid)
-            print("************User:",entry[1],"is Connected to socket")
+            #check if user is already connected
+            user_already_live = False
+            for client_entry in clients:
+                if str(token_entry[1]) == client_entry[1]:
+                    # rewrite the client sid
+                    DBclients.delete(idd=(str(client_entry[0]),)) # delete previous client ID
+                    DBclients.insert(data=(str(request.sid),client_entry[1])) # insert new client ID
+                    user_already_live = True
+                    break
 
-    # something to refer to specific user at the time of emit
+            if not user_already_live:
+                DBclients.insert(data=(str(request.sid),token_entry[1]))
+
+            print("************User:",token_entry[1],"is Connected to socket")
+
+    # updates room each time someone connects
     room = session.get('room')
 
     # display the user is connected
     emit('my_response',
          {'data': f"You are Connected", 'from': "SERVER"},
-         room=clients[clients.index(str(request.sid))])
-
-def set_message(request,message):
-    # global variable that contains the message (very bad, implement database)
-    global last_message
-    last_message = message['data']
-    print("--------------------------",last_message)
-
+         room=str(request.sid))
+    
 def deliver_message(request,message):
+    clients = DBclients.read()
+
     # deliver to specific user, specified by the sender
-    sender = users[clients.index(str(request.sid))]
-    reciever_index = users.index(str(message['data']))
-    emit('my_response',
-         {'data': last_message, 'from': str(sender)},
-         room=clients[reciever_index])
-    emit('self_response',
-         {'data': last_message, 'to': str(users[reciever_index])},
-         room=clients[clients.index(str(request.sid))])
+    try:
+        for client_entry in clients:
+            if client_entry[1] == str(message['to']):
+                reciever_sid = client_entry[0]
+            if client_entry[0] == str(request.sid):
+                sender = client_entry[1]
+
+        sender_sid = request.sid
+
+        emit('my_response',
+             {'data': message['data'], 'from': sender},
+             room=reciever_sid)
+        emit('self_response',
+             {'data': message['data'], 'to': str(message['to'])},
+             room=sender_sid)
+    except:
+        emit('self_response',
+             {'data': message['data'], 'to': "::socket opened somehere else, please use at 1 place:: last-msg"},
+             room=sender_sid)
+
 
 def disconnect_request():
     @copy_current_request_context   # pata nahi kyu h

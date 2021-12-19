@@ -34,10 +34,6 @@ def _verify_event_():
 def _sock_connect_(message):
 	return connect(session,request,message)
 
-@socket_.on('save_messages',namespace="/chat")
-def _sock_save_(message):
-	return set_message(request,message)
-
 @socket_.on('deliver_messages',namespace="/chat")
 def _sock_deliver_(message):
 	return deliver_message(request,message)

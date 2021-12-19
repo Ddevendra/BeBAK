@@ -25,11 +25,9 @@
                     cb();
             });
             $('form#emit').submit(function(event) {
-                socket.emit('save_messages', {data: $('#emit_data').val()});
-                return false;
-            });
-            $('form#deliver').submit(function(event) {
-                socket.emit('deliver_messages', {data: $('#deliver_to').val()});
+                socket.emit('deliver_messages', 
+                    {data: $('#emit_data').val(),
+                    to: $('#deliver_to').val()});
                 return false;
             });
             $('form#disconnect').submit(function(event) {
@@ -52,12 +50,11 @@
     <hr>
     <h1 style="background-color:white;">Messaging</h1>
     <form id="emit" method="POST" action='#'>
+        To:<input type="text" name="deliver_to" id="deliver_to" placeholder="username">
+        <br>
+        Message:
         <input type="text" name="emit_data" id="emit_data" placeholder="Message">
-        <input type="submit" value="Set Message">
-    </form>
-    <form id="deliver" method="POST" action='#'>
-        <input type="submit" value="Deliver Message to user">
-        <input type="text" name="deliver_to" id="deliver_to" placeholder="username">
+        <input type="submit" value="Send Message">
     </form>
     <br>
     <hr>

@@ -1,7 +1,7 @@
 import sqlite3 
 
 class database:
-    def __init__(self,database=None,table=None,data=None, column=None, key=None):
+    def __init__(self,database=None,table=None):
         """
         database - name of the database
         table - name of the table
@@ -11,9 +11,6 @@ class database:
         """
         self.database = database
         self.table = table
-        self.data = data
-        self.column = column
-        self.key = key
 
     def connect(self):
         if (self.database == None):
@@ -45,7 +42,6 @@ class database:
         try:
             connection = self.connect()
             query = f"insert into {self.table}{self.table_param} values(?,?)"
-            print("queryrrrrrrrrrry:",query,data)
             connection.execute(query,data)
             connection.commit()
         except:
@@ -55,13 +51,13 @@ class database:
     def delete(self, idd):
         self.data = idd
 
-        if (self.table == None):
-            print("Table name not specified")
+        if (self.data == None):
+            print("No data to delete")
 
         try:
             connection = self.connect()
             query = f"delete from {self.table} where ID=(?)"
-            connection.execute(query,data)
+            connection.execute(query,idd)
             connection.commit()
         except:
             print("Could not delete the value")
@@ -86,22 +82,22 @@ class database:
             print("Could not search the table")
 
 
-    def find(self):
-        if (self.table == None):
-            print("Table name not specified")
+    # def find(self):
+    #     if (self.table == None):
+    #         print("Table name not specified")
 
-        try:
-            connection = self.connect()
-            cursor = connection.cursor()
-            query = f"select * from {self.table} where {self.column}='{self.key}'"
-            cursor.execute(query)
-            connection.commit()
-            rows = cursor.fetchall()
-            search_results = []
-            for row in rows:
-                search_results.append(row)
-            return search_results
-        except:
-            print("Could not find the value")
+    #     try:
+    #         connection = self.connect()
+    #         cursor = connection.cursor()
+    #         query = f"select * from {self.table} where {self.column}='{self.key}'"
+    #         cursor.execute(query)
+    #         connection.commit()
+    #         rows = cursor.fetchall()
+    #         search_results = []
+    #         for row in rows:
+    #             search_results.append(row)
+    #         return search_results
+    #     except:
+    #         print("Could not find the value")
 
 
