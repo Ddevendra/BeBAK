@@ -23,6 +23,8 @@ def authenticate_user(request):
     return res
 
 def register_user(request):
+    accounts = DBaccounts.read()
+
     # make a new entry into accounts database
     if request.method == 'POST':
         userName = request.form.get('username')
@@ -34,7 +36,7 @@ def register_user(request):
             if entry[0] == str(userName):
                 return "you are already registered, Please login"
 
-        accounts.insert(data=(str(userName),str(passWord)))
+        DBaccounts.insert(data=(str(userName),str(passWord)))
 
         return redirect("/")
 

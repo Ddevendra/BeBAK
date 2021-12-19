@@ -44,4 +44,5 @@ def _sock_disconnect_(message):
 
 
 if __name__ =="__main__":  
-	socket_.run(app, debug=True)
+	from os import environ  
+	socket_.run(app, debug=True, host="0.0.0.0", port=environ.get("PORT", 5000))

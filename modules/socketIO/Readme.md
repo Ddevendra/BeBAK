@@ -1,5 +1,5 @@
 *CONNECTION* :
-- connects from the stores cookie
+- connects from the stored cookie
 OR
 - relogin 
 
