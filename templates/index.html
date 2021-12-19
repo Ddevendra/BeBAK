@@ -19,6 +19,11 @@
                 if (cb)
                     cb();
             });
+            socket.on('self_response', function(msg, cb) {
+                $('#log').append('<br>' + $('<div/>').text('to #' + msg.to + ': ' + msg.data).html());
+                if (cb)
+                    cb();
+            });
             $('form#emit').submit(function(event) {
                 socket.emit('save_messages', {data: $('#emit_data').val()});
                 return false;

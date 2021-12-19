@@ -1,23 +1,27 @@
-from flask_socketio import SocketIO, emit, disconnect
-import sqlite3 
+from flask_socketio import SocketIO, emit, disconnect 
+
+from ..db_class import database
+
+DBaccounts = database("./database/accounts",table="Accounts")
+DBtokens = database(database="./database/tokens",table="CookieTokens")
 
 clients = []
 users = []
+
 
 def connect(session,request,message):
     # create list of connected users
     print("__________________________",request.sid)
 
     # getting username
-    dbConnectTokens = sqlite3.connect('./database/tokens')
-    dbTOKENS = dbConnectTokens.execute("select * from CookieTokens")
+    tokens = DBtokens.read()
 
     read_cookie_token = str(request.cookies.get("token"))
     print("got this cookie: token=",read_cookie_token)
-    for entry in dbTOKENS:
+    for entry in tokens:
         if read_cookie_token == entry[0]:
 
-            #check if user is already connected
+            #check if user is already connected (implement database to resolve the multiple login issue)
             if str(entry[1]) not in users:
                 users.append(entry[1])
                 clients.append(request.sid)
@@ -44,8 +48,8 @@ def deliver_message(request,message):
     emit('my_response',
          {'data': last_message, 'from': str(sender)},
          room=clients[reciever_index])
-    emit('my_response',
-         {'data': last_message, 'from': str(sender)+"-->"+str(users[reciever_index])},
+    emit('self_response',
+         {'data': last_message, 'to': str(users[reciever_index])},
          room=clients[clients.index(str(request.sid))])
 
 def disconnect_request():

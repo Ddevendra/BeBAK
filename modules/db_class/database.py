@@ -26,10 +26,17 @@ class database:
             print("Could not connect to database")
 
 
-    def insert(self):
+    def insert(self, data):
+        self.data = data
+
         if (self.data == None):
             print("No data to insert")
             return
+
+        if self.table == "Accounts":
+            self.table_param = "(USER, PASSWORD)"
+        else :
+            self.table_param = "(ID, USER)"
 
         if (self.table == None):
             print("Table Name not specified")
@@ -37,23 +44,24 @@ class database:
 
         try:
             connection = self.connect()
-            cursor = connection.cursor()
-            query = f"insert into {self.table} values {self.data}"
-            cursor.execute(query)
+            query = f"insert into {self.table}{self.table_param} values(?,?)"
+            print("queryrrrrrrrrrry:",query,data)
+            connection.execute(query,data)
             connection.commit()
         except:
             print("Could not insert the values to table")
 
 
-    def delete(self):
+    def delete(self, idd):
+        self.data = idd
+
         if (self.table == None):
             print("Table name not specified")
 
         try:
             connection = self.connect()
-            cursor = connection.cursor()
-            query = f"delete from {self.table} where {self.column}='{self.key}'"
-            cursor.execute(query)
+            query = f"delete from {self.table} where ID=(?)"
+            connection.execute(query,data)
             connection.commit()
         except:
             print("Could not delete the value")

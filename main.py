@@ -44,7 +44,7 @@ def _sock_deliver_(message):
 
 @socket_.on('disconnect_request',namespace="/chat")
 def _sock_disconnect_(message):
-	return disconnect_request(request,message)
+	return disconnect_request()
 
 
 if __name__ =="__main__":  
