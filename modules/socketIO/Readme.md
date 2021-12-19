@@ -1,14 +1,13 @@
 *CONNECTION* :
-- enter a username
-- click connect to socket
-- click disconnect to disconnect from application
+- connects from the stores cookie
+OR
+- relogin 
 
 ---
 *MESSAGING* :
+- enter the username to whom you want to send message
 - enter the message
-- click "set message" to set it for next delivery
-- enter user number of user to which you want to send the message
-- click "deliver to user"
+- click "send message"
 
 *LOGS* :
 - all messages and logs from server appear here
