@@ -32,6 +32,8 @@ def connect(session,request,message):
                 DBclients.insert(data=(str(request.sid),token_entry[1]))
 
             print("************User:",token_entry[1],"is Connected to socket")
+            
+            break
 
     # updates room each time someone connects
     room = session.get('room')
